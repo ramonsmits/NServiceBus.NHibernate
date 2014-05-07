@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30110.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SqlServer", "SqlServer\SqlServer.csproj", "{FAC0EEA0-7720-470B-8C63-7E26DAADFBC9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test.NHibernate", "NHibernate\Test.NHibernate.csproj", "{6A5F00A5-751B-4F16-A231-CB68C4AAE487}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FAC0EEA0-7720-470B-8C63-7E26DAADFBC9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FAC0EEA0-7720-470B-8C63-7E26DAADFBC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FAC0EEA0-7720-470B-8C63-7E26DAADFBC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FAC0EEA0-7720-470B-8C63-7E26DAADFBC9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6A5F00A5-751B-4F16-A231-CB68C4AAE487}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6A5F00A5-751B-4F16-A231-CB68C4AAE487}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6A5F00A5-751B-4F16-A231-CB68C4AAE487}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6A5F00A5-751B-4F16-A231-CB68C4AAE487}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
