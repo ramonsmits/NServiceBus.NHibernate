@@ -1,5 +1,4 @@
 using System;
-using System.Threading;
 using NServiceBus.Persistence.NHibernate;
 using NServiceBus.Saga;
 using Sample.NHibernate.Outbox.Entities;
@@ -9,8 +8,6 @@ namespace Sample.NHibernate.Outbox
     internal class SaveOrder : Saga<SaveOrder.OrderData>, IAmStartedByMessages<NewOrder>,
         IHandleTimeouts<BuyersRemorseIsOver>
     {
-        private static int counter = 0;
-
         public NHibernateStorageContext NHibernateStorageContext { get; set; }
 
         public void Handle(NewOrder message)
@@ -19,6 +16,7 @@ namespace Sample.NHibernate.Outbox
 
             RequestTimeout(TimeSpan.FromSeconds(5), new BuyersRemorseIsOver());
 
+            Data.ThrowException = Bus.CurrentMessageContext.Headers.ContainsKey("ThrowException");
             Data.Product = message.Product;
             Data.Quantity = message.Quantity;
         }
@@ -42,7 +40,7 @@ namespace Sample.NHibernate.Outbox
 
             MarkAsComplete();
 
-            if ((Interlocked.Increment(ref counter) % 3) == 0)
+            if (Data.ThrowException)
             {
                 throw new Exception("Every 3rd order will fail!");
             }
@@ -56,6 +54,7 @@ namespace Sample.NHibernate.Outbox
         {
             public virtual int Quantity { get; set; }
             public virtual string Product { get; set; }
+            public virtual bool ThrowException { get; set; }
         }
     }
 

@@ -71,12 +71,12 @@
     <Compile Include="EnableNoDTC.cs" />
     <Compile Include="EndpointConfig.cs" />
     <Compile Include="Entities\Order.cs" />
-    <Compile Include="NewOrder.cs" />
-    <Compile Include="OrderPlaced.cs" />
+    <Compile Include="Messages.cs" />
     <Compile Include="OrderPlacedHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SaveOrder.cs" />
     <Compile Include="Sender.cs" />
+    <Compile Include="ShowOrdersHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">

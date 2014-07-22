@@ -21,7 +21,9 @@ namespace Sample.NHibernate.Outbox
 
             Console.Out.WriteLine(@"Commands:
 'Enter' to place a new order
-'d' to place a duplicate order");
+'d' to place a duplicate order
+'b' to simulate an exception thrown in the saga timeout handler
+'l' to list all the orders successfully processed");
             ConsoleKey key;
 
             while ((key = Console.ReadKey(true).Key) != ConsoleKey.Escape)
@@ -36,6 +38,25 @@ namespace Sample.NHibernate.Outbox
                     });
 
                     Console.Out.WriteLine("Duplicate order placed, this won't work");
+                }
+
+                if (key == ConsoleKey.B)
+                {
+                    Bus.SendLocal<NewOrder>(m =>
+                    {
+                        m.Product = "iPhone 6";
+                        m.Quantity = 1;
+                        m.SetHeader("ThrowException", Boolean.TrueString);
+                    });
+
+                    Console.Out.WriteLine("An exception will be thrown in the saga timeout handler");
+                }
+
+                if (key == ConsoleKey.L)
+                {
+                    Bus.SendLocal<ShowOrders>(m => {});
+
+                    Console.Out.WriteLine("An exception will be thrown in the saga timeout handler");
                 }
 
                 if (key == ConsoleKey.Enter)
