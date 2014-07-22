@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using NServiceBus;
 
 namespace Sample.NHibernate.Outbox
@@ -9,66 +10,57 @@ namespace Sample.NHibernate.Outbox
 
         public void Start()
         {
-            var duplicateMessageId = Guid.NewGuid().ToString();
-
-            Console.Out.WriteLine("Initialising duplicate order...");
-            Bus.SendLocal<NewOrder>(m =>
-            {
-                m.Product = "iPhone 5C";
-                m.Quantity = 10;
-                m.SetHeader(Headers.MessageId, duplicateMessageId);
-            });
-
-            Console.Out.WriteLine(@"Commands:
-'Enter' to place a new order
-'d' to place a duplicate order
-'b' to simulate an exception thrown in the saga timeout handler
-'l' to list all the orders successfully processed");
             ConsoleKey key;
 
             while ((key = Console.ReadKey(true).Key) != ConsoleKey.Escape)
             {
-                if (key == ConsoleKey.D)
-                {
-                    Bus.SendLocal<NewOrder>(m =>
-                    {
-                        m.Product = "iPhone 5C";
-                        m.Quantity = 10;
-                        m.SetHeader(Headers.MessageId, duplicateMessageId);
-                    });
-
-                    Console.Out.WriteLine("Duplicate order placed, this won't work");
-                }
-
-                if (key == ConsoleKey.B)
-                {
-                    Bus.SendLocal<NewOrder>(m =>
-                    {
-                        m.Product = "iPhone 6";
-                        m.Quantity = 1;
-                        m.SetHeader("ThrowException", Boolean.TrueString);
-                    });
-
-                    Console.Out.WriteLine("An exception will be thrown in the saga timeout handler");
-                }
-
-                if (key == ConsoleKey.L)
-                {
-                    Bus.SendLocal<ShowOrders>(m => {});
-
-                    Console.Out.WriteLine("An exception will be thrown in the saga timeout handler");
-                }
-
                 if (key == ConsoleKey.Enter)
                 {
-                    Bus.SendLocal(new NewOrder {Product = "iPhone 4S", Quantity = 5});
-                    Console.Out.WriteLine("Order placed");
+                    OrderCompleteHandler.TimeStarted = DateTime.UtcNow;
+                    OrderCompleteHandler.NumExpectedMessages = 1000;
+                    OrderCompleteHandler.MessagesCounter = 0;
+
+                    Parallel.For(0, OrderCompleteHandler.NumExpectedMessages, i =>
+                        Bus.SendLocal(new NewOrder
+                        {
+                            OrderId = GenerateCombGuid(),
+                            Product = "iPhone 4S",
+                            Quantity = 5
+                        }));
+                    Console.Out.WriteLine("Orders placed");
                 }
             }
         }
 
         public void Stop()
         {
+        }
+
+        static Guid GenerateCombGuid()
+        {
+            var guidArray = Guid.NewGuid().ToByteArray();
+
+            var baseDate = new DateTime(1900, 1, 1);
+            var now = DateTime.Now;
+
+            // Get the days and milliseconds which will be used to build the byte string 
+            var days = new TimeSpan(now.Ticks - baseDate.Ticks);
+            var timeOfDay = now.TimeOfDay;
+
+            // Convert to a byte array 
+            // Note that SQL Server is accurate to 1/300th of a millisecond so we divide by 3.333333 
+            var daysArray = BitConverter.GetBytes(days.Days);
+            var millisecondArray = BitConverter.GetBytes((long)(timeOfDay.TotalMilliseconds / 3.333333));
+
+            // Reverse the bytes to match SQL Servers ordering 
+            Array.Reverse(daysArray);
+            Array.Reverse(millisecondArray);
+
+            // Copy the bytes into the guid 
+            Array.Copy(daysArray, daysArray.Length - 2, guidArray, guidArray.Length - 6, 2);
+            Array.Copy(millisecondArray, millisecondArray.Length - 4, guidArray, guidArray.Length - 4, 4);
+
+            return new Guid(guidArray);
         }
     }
 }

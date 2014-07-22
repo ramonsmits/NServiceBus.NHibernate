@@ -1,3 +1,4 @@
+using System;
 using NServiceBus;
 
 namespace Sample.NHibernate.Outbox
@@ -6,15 +7,38 @@ namespace Sample.NHibernate.Outbox
     {
         public string Product { get; set; }
         public int Quantity { get; set; }
+        public Guid OrderId { get; set; }
     }
 
-    class ShowOrders : ICommand
+    class OrderComplete : ICommand
     {
-        
+        public Guid OrderId { get; set; }
     }
 
+    class OrderIsReadyToBeShipped : IMessage
+    {
+        public Guid OrderId { get; set; }
+    }
+
+    class StartBuyersRemorse : ICommand
+    {
+        public Guid OrderId { get; set; }
+    }
+
+    class BuyersRemorseIsOver: IMessage
+    {
+        public Guid OrderId { get; set; }
+    }
+
+    class StartProcessingOrder : ICommand
+    {
+        public string Product { get; set; }
+        public int Quantity { get; set; }
+        public Guid OrderId { get; set; }        
+    }
+    
     class OrderPlaced : IMessage
     {
-        public long OrderId { get; set; }
+        public Guid OrderId { get; set; }
     }
 }
