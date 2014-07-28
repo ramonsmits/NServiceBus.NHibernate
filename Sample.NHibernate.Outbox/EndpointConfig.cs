@@ -1,5 +1,4 @@
 using NServiceBus;
-using NServiceBus.Container;
 
 namespace Sample.NHibernate.Outbox
 {

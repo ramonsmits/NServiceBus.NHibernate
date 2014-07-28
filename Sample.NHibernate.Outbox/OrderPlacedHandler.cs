@@ -64,7 +64,7 @@ namespace Sample.NHibernate.Outbox
             if (Interlocked.Increment(ref MessagesCounter) == NumExpectedMessages)
             {
                 TimeEnded = DateTime.UtcNow;
-                Console.WriteLine("Test finished, total time: {0}", TimeEnded - TimeStarted);
+                Console.WriteLine("Test finished, total time: {0:G}", TimeEnded - TimeStarted);
             }
         }
     }
