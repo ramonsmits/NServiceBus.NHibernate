@@ -37,7 +37,7 @@ namespace Sample.NHibernate.Outbox
 
             NHibernateStorageContext.Session.Save(order);
 
-            Bus.SendLocal(new StartProcessingOrder
+            Bus.Publish(new OrderSubmitted
             {
                 OrderId = Data.OrderId,
             });

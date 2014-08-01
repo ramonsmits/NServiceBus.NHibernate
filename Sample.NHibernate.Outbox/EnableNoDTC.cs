@@ -18,7 +18,7 @@ namespace Sample.NHibernate.Outbox
 
             config
                 .UsePersistence<NServiceBus.NHibernate>(c => c.UseConfiguration(configuration))
-            .EnableOutbox();
+                .EnableOutbox();
         }
 
         private static Configuration BuildConfiguration()
