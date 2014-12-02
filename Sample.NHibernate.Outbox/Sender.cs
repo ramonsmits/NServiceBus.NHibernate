@@ -12,12 +12,15 @@ namespace Sample.NHibernate.Outbox
             var duplicateMessageId = Guid.NewGuid().ToString();
 
             Console.Out.WriteLine("Initialising duplicate order...");
-            Bus.SendLocal<NewOrder>(m =>
+
+            var newOrder = new NewOrder
             {
-                m.Product = "iPhone 5C";
-                m.Quantity = 10;
-                m.SetHeader(Headers.MessageId, duplicateMessageId);
-            });
+                Product = "iPhone 5C",
+                Quantity = 10,
+            };
+            Bus.SetMessageHeader(newOrder, Headers.MessageId, duplicateMessageId);
+
+            Bus.SendLocal(newOrder);
 
             Console.Out.WriteLine(@"Commands:
 'Enter' to place a new order
@@ -30,31 +33,35 @@ namespace Sample.NHibernate.Outbox
             {
                 if (key == ConsoleKey.D)
                 {
-                    Bus.SendLocal<NewOrder>(m =>
+                    newOrder = new NewOrder
                     {
-                        m.Product = "iPhone 5C";
-                        m.Quantity = 10;
-                        m.SetHeader(Headers.MessageId, duplicateMessageId);
-                    });
+                        Product = "iPhone 5C",
+                        Quantity = 10,
+                    };
+                    Bus.SetMessageHeader(newOrder, Headers.MessageId, duplicateMessageId);
+
+                    Bus.SendLocal(newOrder);
 
                     Console.Out.WriteLine("Duplicate order placed, this won't work");
                 }
 
                 if (key == ConsoleKey.B)
                 {
-                    Bus.SendLocal<NewOrder>(m =>
+                    newOrder = new NewOrder
                     {
-                        m.Product = "iPhone 6";
-                        m.Quantity = 1;
-                        m.SetHeader("ThrowException", Boolean.TrueString);
-                    });
+                        Product = "iPhone 6",
+                        Quantity = 1,
+                    };
+                    Bus.SetMessageHeader(newOrder, "ThrowException", Boolean.TrueString);
 
+                    Bus.SendLocal(newOrder);
+                    
                     Console.Out.WriteLine("An exception will be thrown in the saga timeout handler");
                 }
 
                 if (key == ConsoleKey.L)
                 {
-                    Bus.SendLocal<ShowOrders>(m => {});
+                    Bus.SendLocal(new ShowOrders());
 
                     Console.Out.WriteLine("An exception will be thrown in the saga timeout handler");
                 }
