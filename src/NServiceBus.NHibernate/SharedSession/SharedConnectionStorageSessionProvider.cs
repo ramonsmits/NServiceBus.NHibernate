@@ -16,6 +16,11 @@ namespace NServiceBus.Persistence.NHibernate
 
         public IDbConnectionProvider DbConnectionProvider { get; set; }
 
+        public SharedConnectionStorageSessionProvider()
+        {
+            Console.Out.WriteLine("ff");
+        }
+
         public ISession Session
         {
             get

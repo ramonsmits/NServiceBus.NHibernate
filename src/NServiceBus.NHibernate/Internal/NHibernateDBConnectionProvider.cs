@@ -13,7 +13,7 @@
         /// <param name="context"></param>
         protected override void Setup(FeatureConfigurationContext context)
         {
-            context.Container.ConfigureComponent<DbConnectionProvider>(DependencyLifecycle.SingleInstance);
+            context.Container.ConfigureComponent<DbConnectionProvider>(DependencyLifecycle.InstancePerCall);
         }
     }
 }

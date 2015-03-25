@@ -4,9 +4,8 @@ namespace NServiceBus.Persistence.NHibernate
     using System.Data;
     using global::NHibernate;
     using Pipeline;
-    using Pipeline.Contexts;
 
-    class OpenSessionBehavior : HandlingStageBehavior
+    class OpenSessionBehavior : PhysicalMessageProcessingStageBehavior
     {
         public SessionFactoryProvider SessionFactoryProvider { get; set; }
 

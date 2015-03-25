@@ -4,9 +4,8 @@ namespace NServiceBus.Persistence.NHibernate
     using System.Data;
     using NServiceBus.Settings;
     using Pipeline;
-    using Pipeline.Contexts;
 
-    class OpenSqlConnectionBehavior : HandlingStageBehavior
+    class OpenSqlConnectionBehavior : PhysicalMessageProcessingStageBehavior
     {
         public SessionFactoryProvider SessionFactoryProvider { get; set; }
         public ReadOnlySettings Settings { get; set; }

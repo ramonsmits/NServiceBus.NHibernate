@@ -31,6 +31,10 @@ public class ConfigureNHibernatePersistence
             });
     }
 
+    public void Cleanup()
+    {
+    }
+
     static string Create(params object[] data)
     {
         using (var provider = new MD5CryptoServiceProvider())

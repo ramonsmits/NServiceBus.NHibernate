@@ -30,7 +30,7 @@ namespace NServiceBus.Features
             context.Settings.Get<SharedMappings>()
                 .AddMapping(ApplyMappings);
 
-            context.Container.ConfigureComponent<OutboxPersister>(DependencyLifecycle.SingleInstance);
+            context.Container.ConfigureComponent<OutboxPersister>(DependencyLifecycle.InstancePerCall);
         }
 
         void ApplyMappings(Configuration config)

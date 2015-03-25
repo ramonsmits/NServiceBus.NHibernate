@@ -8,4 +8,8 @@ public class ConfigureNHibernatePersistence
         config.UsePersistence<NHibernatePersistence>()
             .ConnectionString(@"Server=localhost\sqlexpress;Database=nservicebus;Trusted_Connection=True;");
     }
+
+    public void Cleanup()
+    {
+    }
 }

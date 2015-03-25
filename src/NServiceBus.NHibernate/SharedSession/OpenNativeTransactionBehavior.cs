@@ -4,9 +4,8 @@ namespace NServiceBus.Persistence.NHibernate
     using System.Transactions;
     using global::NHibernate;
     using Pipeline;
-    using Pipeline.Contexts;
 
-    class OpenNativeTransactionBehavior : HandlingStageBehavior
+    class OpenNativeTransactionBehavior : PhysicalMessageProcessingStageBehavior
     {
         public SharedConnectionStorageSessionProvider StorageSessionProvider { get; set; }
 
@@ -47,7 +46,6 @@ namespace NServiceBus.Persistence.NHibernate
                 : base("OpenNHibernateTransaction", typeof(OpenNativeTransactionBehavior), "Makes sure that there is a NHibernate ITransaction wrapping the pipeline")
             {
                 InsertAfter(WellKnownStep.ExecuteUnitOfWork);
-                InsertBeforeIfExists(WellKnownStep.InvokeSaga);
                 InsertBeforeIfExists("OutboxRecorder");
             }
         }
