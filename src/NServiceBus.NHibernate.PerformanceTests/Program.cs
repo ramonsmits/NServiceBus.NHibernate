@@ -92,8 +92,6 @@
                 config.EnableOutbox();
             }
 
-            config.DiscardFailedMessagesInsteadOfSendingToErrorQueue();
-
             using (var startableBus = Bus.Create(config))
             {
                 if (saga)

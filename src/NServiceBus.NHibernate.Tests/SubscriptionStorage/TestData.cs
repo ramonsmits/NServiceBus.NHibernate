@@ -26,17 +26,15 @@ namespace NServiceBus.Unicast.Subscriptions.NHibernate.Tests
         public static IEnumerable<MessageType> MessageA = new[] { new MessageType(typeof(MessageA).FullName, new Version(1, 0, 0, 0)) };
         public static IEnumerable<MessageType> MessageAv2 = new[] { new MessageType(typeof(MessageA).FullName,new Version(2,0,0,0)) };
         public static IEnumerable<MessageType> MessageAv11 = new[] { new MessageType(typeof(MessageA).FullName, new Version(1, 1, 0, 0)) };
-
         public static IEnumerable<MessageType> MessageB = new[] { new MessageType(typeof(MessageB)) };
-    
         public static IEnumerable<MessageType> All = new[] { new MessageType(typeof(MessageA)), new MessageType(typeof(MessageB)) };
     }
 
     public class TestClients
     {
-        public static Address ClientA = Address.Parse("ClientA");
-        public static Address ClientB = Address.Parse("ClientB");
-        public static Address ClientC = Address.Parse("ClientC");
+        public const string ClientA = "ClientA";
+        public const string ClientB = "ClientB";
+        public const string ClientC = "ClientC";
     }
     
 }

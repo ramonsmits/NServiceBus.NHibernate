@@ -71,7 +71,7 @@ namespace NServiceBus.Features
                     .ConfigureProperty(p => p.ConnectionString, connString);
                 context.Container.ConfigureComponent<OpenNativeTransactionBehavior>(DependencyLifecycle.InstancePerCall)
                     .ConfigureProperty(p => p.ConnectionString, connString);
-                context.Container.ConfigureComponent(b => new NHibernateStorageContext(b.Build<PipelineExecutor>(), connString), DependencyLifecycle.InstancePerUnitOfWork);
+                context.Container.ConfigureComponent(b => new NHibernateStorageContext(b.Build<BehaviorContext>(), connString), DependencyLifecycle.InstancePerUnitOfWork);
                 context.Container.ConfigureComponent<SharedConnectionStorageSessionProvider>(DependencyLifecycle.SingleInstance)
                     .ConfigureProperty(p => p.ConnectionString, connString);
             }

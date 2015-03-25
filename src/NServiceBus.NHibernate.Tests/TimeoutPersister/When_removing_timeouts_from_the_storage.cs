@@ -22,7 +22,7 @@ namespace NServiceBus.TimeoutPersisters.NHibernate.Tests
             var timeout = new TimeoutData
                           {
                               Time = DateTime.UtcNow.AddHours(-1),
-                              Destination = new Address("timeouts", RuntimeEnvironment.MachineName),
+                              Destination = "timeouts@" + RuntimeEnvironment.MachineName,
                               SagaId = Guid.NewGuid(),
                               State = new byte[] {1, 1, 133, 200},
                               Headers = headers,

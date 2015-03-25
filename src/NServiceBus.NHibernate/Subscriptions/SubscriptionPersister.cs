@@ -18,7 +18,7 @@ namespace NServiceBus.Unicast.Subscriptions.NHibernate
             this.subscriptionStorageSessionProvider = subscriptionStorageSessionProvider;
         }
 
-        public virtual void Subscribe(Address address, IEnumerable<MessageType> messageTypes)
+        public virtual void Subscribe(string address, IEnumerable<MessageType> messageTypes)
         {
             using (var transaction = new TransactionScope(TransactionScopeOption.Suppress))
             {
@@ -30,7 +30,7 @@ namespace NServiceBus.Unicast.Subscriptions.NHibernate
                         {
                             session.SaveOrUpdate(new Subscription
                             {
-                                SubscriberEndpoint = address.ToString(),
+                                SubscriberEndpoint = address,
                                 MessageType = messageType.TypeName + "," + messageType.Version,
                                 Version = messageType.Version.ToString(),
                                 TypeName = messageType.TypeName
@@ -44,7 +44,7 @@ namespace NServiceBus.Unicast.Subscriptions.NHibernate
             }
         }
 
-        public virtual void Unsubscribe(Address address, IEnumerable<MessageType> messageTypes)
+        public virtual void Unsubscribe(string address, IEnumerable<MessageType> messageTypes)
         {
             using (var transaction = new TransactionScope(TransactionScopeOption.Suppress))
             {
@@ -55,7 +55,7 @@ namespace NServiceBus.Unicast.Subscriptions.NHibernate
                         var subscriptions = session.QueryOver<Subscription>()
                             .Where(
                                 s => s.TypeName.IsIn(messageTypes.Select(mt => mt.TypeName).ToList()) &&
-                                     s.SubscriberEndpoint == address.ToString())
+                                     s.SubscriberEndpoint == address)
                             .List();
 
                         foreach (var subscription in subscriptions.Where(s => messageTypes.Contains(new MessageType(s.TypeName, s.Version))))
@@ -70,7 +70,7 @@ namespace NServiceBus.Unicast.Subscriptions.NHibernate
             }
         }
 
-        public virtual IEnumerable<Address> GetSubscriberAddressesForMessage(IEnumerable<MessageType> messageTypes)
+        public virtual IEnumerable<string> GetSubscriberAddressesForMessage(IEnumerable<MessageType> messageTypes)
         {
             using (var transaction = new TransactionScope(TransactionScopeOption.Suppress))
             {
@@ -82,7 +82,7 @@ namespace NServiceBus.Unicast.Subscriptions.NHibernate
                             .Where(s => s.TypeName.IsIn(messageTypes.Select(mt => mt.TypeName).ToList()))
                             .List()
                             .Where(s => messageTypes.Contains(new MessageType(s.TypeName, s.Version)))
-                            .Select(s => Address.Parse(s.SubscriberEndpoint))
+                            .Select(s => s.SubscriberEndpoint)
                             .Distinct()
                             .ToList();
 

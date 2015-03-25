@@ -10,12 +10,12 @@ namespace NServiceBus.Persistence.NHibernate
     /// </summary>
     public class NHibernateStorageContext
     {
-        readonly PipelineExecutor pipelineExecutor;
+        readonly BehaviorContext behaviorContext;
         readonly string connectionString;
 
-        internal NHibernateStorageContext(PipelineExecutor pipelineExecutor, string connectionString)
+        internal NHibernateStorageContext(BehaviorContext behaviorContext, string connectionString)
         {
-            this.pipelineExecutor = pipelineExecutor;
+            this.behaviorContext = behaviorContext;
             this.connectionString = connectionString;
         }
 
@@ -27,7 +27,7 @@ namespace NServiceBus.Persistence.NHibernate
             get
             {
                 Lazy<IDbConnection> lazy;
-                if (pipelineExecutor.CurrentContext.TryGet(string.Format("LazySqlConnection-{0}", connectionString), out lazy))
+                if (behaviorContext.TryGet(string.Format("LazySqlConnection-{0}", connectionString), out lazy))
                 {
                     return lazy.Value;
                 }
@@ -44,7 +44,7 @@ namespace NServiceBus.Persistence.NHibernate
             get
             {
                 Lazy<ISession> lazy;
-                if (pipelineExecutor.CurrentContext.TryGet(string.Format("LazyNHibernateSession-{0}", connectionString), out lazy))
+                if (behaviorContext.TryGet(string.Format("LazyNHibernateSession-{0}", connectionString), out lazy))
                 {
                     return lazy.Value;
                 }
@@ -61,7 +61,7 @@ namespace NServiceBus.Persistence.NHibernate
             get
             {
                 Lazy<ITransaction> lazy;
-                if (pipelineExecutor.CurrentContext.TryGet(string.Format("LazyNHibernateTransaction-{0}", connectionString), out lazy))
+                if (behaviorContext.TryGet(string.Format("LazyNHibernateTransaction-{0}", connectionString), out lazy))
                 {
                     return lazy.Value;
                 }

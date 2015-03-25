@@ -6,14 +6,14 @@ namespace NServiceBus.Persistence.NHibernate
     using Pipeline;
     using Pipeline.Contexts;
 
-    class OpenSqlConnectionBehavior : IBehavior<IncomingContext>
+    class OpenSqlConnectionBehavior : HandlingStageBehavior
     {
         public SessionFactoryProvider SessionFactoryProvider { get; set; }
         public ReadOnlySettings Settings { get; set; }
 
         public string ConnectionString { get; set; }
 
-        public void Invoke(IncomingContext context, Action next)
+        public override void Invoke(Context context, Action next)
         {
             IDbConnection existingConnection;
 

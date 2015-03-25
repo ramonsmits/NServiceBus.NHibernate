@@ -6,13 +6,13 @@ namespace NServiceBus.Persistence.NHibernate
     using Pipeline;
     using Pipeline.Contexts;
 
-    class OpenSessionBehavior : IBehavior<IncomingContext>
+    class OpenSessionBehavior : HandlingStageBehavior
     {
         public SessionFactoryProvider SessionFactoryProvider { get; set; }
 
         public string ConnectionString { get; set; }
 
-        public void Invoke(IncomingContext context, Action next)
+        public override void Invoke(Context context, Action next)
         {
             ISession existingSession;
 

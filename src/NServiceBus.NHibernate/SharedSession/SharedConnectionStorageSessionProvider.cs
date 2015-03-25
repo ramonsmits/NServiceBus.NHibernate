@@ -8,7 +8,7 @@ namespace NServiceBus.Persistence.NHibernate
 
     class SharedConnectionStorageSessionProvider : IStorageSessionProvider
     {
-        public PipelineExecutor PipelineExecutor { get; set; }
+        public BehaviorContext BehaviorContext { get; set; }
 
         public string ConnectionString { get; set; }
 
@@ -22,7 +22,7 @@ namespace NServiceBus.Persistence.NHibernate
             {
                 Lazy<ISession> existingSession;
 
-                if (!PipelineExecutor.CurrentContext.TryGet(string.Format("LazyNHibernateSession-{0}", ConnectionString), out existingSession))
+                if (!BehaviorContext.TryGet(string.Format("LazyNHibernateSession-{0}", ConnectionString), out existingSession))
                 {
                     throw new Exception("No active storage session found in context");
                 }

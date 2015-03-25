@@ -63,13 +63,13 @@
                 {
                     b.OnEndpointSubscribed<Context>((s, context) =>
                     {
-                        if (s.SubscriberReturnAddress.Queue.Contains("Subscriber1"))
+                        if (s.SubscriberReturnAddress.Contains("Subscriber1"))
                         {
                             context.Subscriber1Subscribed = true;
                         }
 
 
-                        if (s.SubscriberReturnAddress.Queue.Contains("Subscriber2"))
+                        if (s.SubscriberReturnAddress.Contains("Subscriber2"))
                         {
                             context.Subscriber2Subscribed = true;
                         }

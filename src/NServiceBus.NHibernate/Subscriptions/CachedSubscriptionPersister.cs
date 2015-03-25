@@ -12,24 +12,24 @@ namespace NServiceBus.Unicast.Subscriptions.NHibernate
             this.expiration = expiration;
         }
 
-        public override void Subscribe(Address address, IEnumerable<MessageType> messageTypes)
+        public override void Subscribe(string address, IEnumerable<MessageType> messageTypes)
         {
             base.Subscribe(address, messageTypes);
             cache.Clear();
         }
 
-        public override void Unsubscribe(Address address, IEnumerable<MessageType> messageTypes)
+        public override void Unsubscribe(string address, IEnumerable<MessageType> messageTypes)
         {
             base.Unsubscribe(address, messageTypes);
             cache.Clear();
         }
 
-        public override IEnumerable<Address> GetSubscriberAddressesForMessage(IEnumerable<MessageType> messageTypes)
+        public override IEnumerable<string> GetSubscriberAddressesForMessage(IEnumerable<MessageType> messageTypes)
         {
             var types = messageTypes.ToList();
             var typeNames = types.Select(mt => mt.TypeName).ToArray();
             var key = String.Join(",", typeNames);
-            Tuple<DateTimeOffset, IEnumerable<Address>> cacheItem;
+            Tuple<DateTimeOffset, IEnumerable<string>> cacheItem;
             var cacheItemFound = cache.TryGetValue(key, out cacheItem);
 
             if (cacheItemFound && (DateTimeOffset.UtcNow - cacheItem.Item1) < expiration)
@@ -37,7 +37,7 @@ namespace NServiceBus.Unicast.Subscriptions.NHibernate
                 return cacheItem.Item2;
             }
 
-            cacheItem = new Tuple<DateTimeOffset, IEnumerable<Address>>(
+            cacheItem = new Tuple<DateTimeOffset, IEnumerable<string>>(
                 DateTimeOffset.UtcNow,
                 base.GetSubscriberAddressesForMessage(types)
                 );
@@ -47,7 +47,7 @@ namespace NServiceBus.Unicast.Subscriptions.NHibernate
             return cacheItem.Item2;
         }
 
-        static readonly ConcurrentDictionary<string, Tuple<DateTimeOffset, IEnumerable<Address>>> cache = new ConcurrentDictionary<string, Tuple<DateTimeOffset, IEnumerable<Address>>>();
+        static readonly ConcurrentDictionary<string, Tuple<DateTimeOffset, IEnumerable<string>>> cache = new ConcurrentDictionary<string, Tuple<DateTimeOffset, IEnumerable<string>>>();
         TimeSpan expiration;
     }
 }

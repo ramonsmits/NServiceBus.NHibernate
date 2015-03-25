@@ -22,11 +22,11 @@
                 s.EnableFeatureByDefault<NHibernateStorageSession>();
             });
            
-            Supports(Storage.GatewayDeduplication, s => s.EnableFeatureByDefault<NHibernateGatewayDeduplication>());
-            Supports(Storage.Timeouts, s => s.EnableFeatureByDefault<NHibernateTimeoutStorage>());
-            Supports(Storage.Sagas, s => s.EnableFeatureByDefault<NHibernateSagaStorage>());
-            Supports(Storage.Subscriptions, s => s.EnableFeatureByDefault<NHibernateSubscriptionStorage>());
-            Supports(Storage.Outbox, s => s.EnableFeatureByDefault<NHibernateOutboxStorage>());
+            Supports<StorageType.GatewayDeduplication>(s => s.EnableFeatureByDefault<NHibernateGatewayDeduplication>());
+            Supports<StorageType.Timeouts>(s => s.EnableFeatureByDefault<NHibernateTimeoutStorage>());
+            Supports<StorageType.Sagas>(s => s.EnableFeatureByDefault<NHibernateSagaStorage>());
+            Supports<StorageType.Subscriptions>(s => s.EnableFeatureByDefault<NHibernateSubscriptionStorage>());
+            Supports<StorageType.Outbox>(s => s.EnableFeatureByDefault<NHibernateOutboxStorage>());
         }
     }
 }

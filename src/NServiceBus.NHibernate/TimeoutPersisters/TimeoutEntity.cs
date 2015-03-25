@@ -16,7 +16,7 @@ namespace NServiceBus.TimeoutPersisters.NHibernate
         /// <summary>
         /// The address of the client who requested the timeout.
         /// </summary>
-        public virtual Address Destination { get; set; }
+        public virtual string Destination { get; set; }
 
         /// <summary>
         /// The saga ID.
