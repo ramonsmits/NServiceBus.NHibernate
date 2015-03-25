@@ -7,9 +7,14 @@ namespace NServiceBus.Persistence.NHibernate
 
     class OpenNativeTransactionBehavior : PhysicalMessageProcessingStageBehavior
     {
-        public SharedConnectionStorageSessionProvider StorageSessionProvider { get; set; }
+        readonly SharedConnectionStorageSessionProvider sharedConnectionStorageSessionProvider;
 
         public string ConnectionString { get; set; }
+
+        public OpenNativeTransactionBehavior(SharedConnectionStorageSessionProvider sharedConnectionStorageSessionProvider)
+        {
+            this.sharedConnectionStorageSessionProvider = sharedConnectionStorageSessionProvider;
+        }
 
         public override void Invoke(Context context, Action next)
         {
@@ -19,7 +24,7 @@ namespace NServiceBus.Persistence.NHibernate
                 return;
             }
 
-            var lazyTransaction = new Lazy<ITransaction>(() => StorageSessionProvider.Session.BeginTransaction());
+            var lazyTransaction = new Lazy<ITransaction>(() => sharedConnectionStorageSessionProvider.Session.BeginTransaction());
             context.Set(string.Format("LazyNHibernateTransaction-{0}", ConnectionString), lazyTransaction);
 
             try

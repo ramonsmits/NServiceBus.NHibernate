@@ -7,10 +7,16 @@ namespace NServiceBus.Persistence.NHibernate
 
     class OpenSqlConnectionBehavior : PhysicalMessageProcessingStageBehavior
     {
-        public SessionFactoryProvider SessionFactoryProvider { get; set; }
-        public ReadOnlySettings Settings { get; set; }
+        readonly SessionFactoryProvider sessionFactoryProvider;
+        readonly ReadOnlySettings settings;
 
         public string ConnectionString { get; set; }
+
+        public OpenSqlConnectionBehavior(SessionFactoryProvider sessionFactoryProvider, ReadOnlySettings settings)
+        {
+            this.sessionFactoryProvider = sessionFactoryProvider;
+            this.settings = settings;
+        }
 
         public override void Invoke(Context context, Action next)
         {
@@ -18,7 +24,7 @@ namespace NServiceBus.Persistence.NHibernate
 
             if (context.TryGet(string.Format("SqlConnection-{0}", ConnectionString), out existingConnection))
             {
-                var transactionScopeDisabled = Settings.Get<bool>("Transactions.SuppressDistributedTransactions");
+                var transactionScopeDisabled = settings.Get<bool>("Transactions.SuppressDistributedTransactions");
                 if (transactionScopeDisabled)
                 {
                     throw new InvalidOperationException(@"In order for NHibernate persistence to work with SQLServer transport, ambient transactions need to be enabled. 
@@ -29,7 +35,7 @@ The transaction WILL NOT be escalated to a distrubuted transaction because SQLSe
                 return;
             }
 
-            var lazyConnection = new Lazy<IDbConnection>(() => SessionFactoryProvider.SessionFactory.GetConnection());
+            var lazyConnection = new Lazy<IDbConnection>(() => sessionFactoryProvider.SessionFactory.GetConnection());
 
             context.Set(string.Format("LazySqlConnection-{0}", ConnectionString), lazyConnection);
             try

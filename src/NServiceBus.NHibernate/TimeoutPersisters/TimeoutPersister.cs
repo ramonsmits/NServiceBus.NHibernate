@@ -13,11 +13,17 @@ namespace NServiceBus.TimeoutPersisters.NHibernate
 
     class TimeoutPersister : IPersistTimeouts
     {
-        public ISessionFactory SessionFactory { get; set; }
+        readonly ISessionFactory sessionFactory;
+        readonly IDbConnectionProvider connectionProvider;
 
-        public IDbConnectionProvider DbConnectionProvider { get; set; }
         public string EndpointName { get; set; }
         public string ConnectionString { get; set; }
+
+        public TimeoutPersister(ISessionFactory sessionFactory, IDbConnectionProvider connectionProvider)
+        {
+            this.sessionFactory = sessionFactory;
+            this.connectionProvider = connectionProvider;
+        }
 
         /// <summary>
         ///     Retrieves the next range of timeouts that are due.
@@ -29,9 +35,9 @@ namespace NServiceBus.TimeoutPersisters.NHibernate
         {
             var now = DateTime.UtcNow;
 
-            using (var conn = SessionFactory.GetConnection())
+            using (var conn = sessionFactory.GetConnection())
             {
-                using (var session = SessionFactory.OpenStatelessSessionEx(conn))
+                using (var session = sessionFactory.OpenStatelessSessionEx(conn))
                 {
                     using (var tx = session.BeginAmbientTransactionAware(IsolationLevel.ReadCommitted))
                     {
@@ -85,7 +91,7 @@ namespace NServiceBus.TimeoutPersisters.NHibernate
             }
             else
             {
-                using (connection = SessionFactory.GetConnection())
+                using (connection = sessionFactory.GetConnection())
                 {
                     StoreTimeoutEntity(timeout, connection, timeoutId);
                 }
@@ -96,7 +102,7 @@ namespace NServiceBus.TimeoutPersisters.NHibernate
 
         void StoreTimeoutEntity(TimeoutData timeout, IDbConnection connection, Guid timeoutId)
         {
-            using (var session = SessionFactory.OpenSessionEx(connection))
+            using (var session = sessionFactory.OpenSessionEx(connection))
             {
                 using (var tx = session.BeginAmbientTransactionAware(IsolationLevel.ReadCommitted))
                 {
@@ -131,7 +137,7 @@ namespace NServiceBus.TimeoutPersisters.NHibernate
                 return TryRemoveTimeoutEntity(Guid.Parse(timeoutId), connection, out timeoutData);
             }
 
-            using (connection = SessionFactory.GetConnection())
+            using (connection = sessionFactory.GetConnection())
             {
                 return TryRemoveTimeoutEntity(Guid.Parse(timeoutId), connection, out timeoutData);
             }
@@ -141,7 +147,7 @@ namespace NServiceBus.TimeoutPersisters.NHibernate
         {
             bool found;
 
-            using (var session = SessionFactory.OpenStatelessSessionEx(connection))
+            using (var session = sessionFactory.OpenStatelessSessionEx(connection))
             {
                 using (var tx = session.BeginAmbientTransactionAware(IsolationLevel.ReadCommitted))
                 {
@@ -197,7 +203,7 @@ namespace NServiceBus.TimeoutPersisters.NHibernate
             }
             else
             {
-                using (connection = SessionFactory.GetConnection())
+                using (connection = sessionFactory.GetConnection())
                 {
                     RemoveTimeoutEntityBySagaId(sagaId, connection);
                 }
@@ -206,12 +212,12 @@ namespace NServiceBus.TimeoutPersisters.NHibernate
 
         bool TryGetConnection(out IDbConnection connection)
         {
-            return DbConnectionProvider.TryGetConnection(out connection, ConnectionString);
+            return connectionProvider.TryGetConnection(out connection, ConnectionString);
         }
 
         void RemoveTimeoutEntityBySagaId(Guid sagaId, IDbConnection connection)
         {
-            using (var session = SessionFactory.OpenStatelessSessionEx(connection))
+            using (var session = sessionFactory.OpenStatelessSessionEx(connection))
             {
                 using (var tx = session.BeginAmbientTransactionAware(IsolationLevel.ReadCommitted))
                 {

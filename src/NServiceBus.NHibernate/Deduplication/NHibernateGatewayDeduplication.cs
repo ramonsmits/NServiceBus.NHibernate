@@ -2,6 +2,7 @@ namespace NServiceBus.Features
 {
     using Deduplication.NHibernate.Config;
     using NHibernate.Cfg;
+    using NServiceBus.Deduplication.NHibernate;
     using Persistence.NHibernate;
 
     /// <summary>
@@ -47,8 +48,7 @@ namespace NServiceBus.Features
                 Deduplication.NHibernate.Installer.Installer.RunInstaller = context.Settings.Get<bool>("NHibernate.Common.AutoUpdateSchema");
             }
 
-            context.Container.ConfigureComponent<Deduplication.NHibernate.GatewayDeduplication>(DependencyLifecycle.SingleInstance)
-                .ConfigureProperty(p => p.SessionFactory, configuration.BuildSessionFactory());
+            context.Container.ConfigureComponent(() => new GatewayDeduplication(configuration.BuildSessionFactory()), DependencyLifecycle.SingleInstance);
         }
     }
 }

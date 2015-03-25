@@ -11,7 +11,12 @@
 
     class OutboxPersister : IOutboxStorage
     {
-        public IStorageSessionProvider StorageSessionProvider { get; set; }
+        readonly IStorageSessionProvider storageSessionProvider;
+
+        public OutboxPersister(IStorageSessionProvider storageSessionProvider)
+        {
+            this.storageSessionProvider = storageSessionProvider;
+        }
 
         public bool TryGet(string messageId, out OutboxMessage message)
         {
@@ -19,7 +24,7 @@
 
             message = null;
 
-            using (var session = StorageSessionProvider.OpenStatelessSession())
+            using (var session = storageSessionProvider.OpenStatelessSession())
             {
                 using (var tx = session.BeginAmbientTransactionAware(IsolationLevel.ReadCommitted))
                 {
@@ -56,7 +61,7 @@
                 Options = t.Options,
             });
 
-            StorageSessionProvider.ExecuteInTransaction(x => x.Save(new OutboxRecord
+            storageSessionProvider.ExecuteInTransaction(x => x.Save(new OutboxRecord
             {
                 MessageId = messageId,
                 Dispatched = false,
@@ -66,7 +71,7 @@
 
         public void SetAsDispatched(string messageId)
         {
-            using (var session = StorageSessionProvider.OpenStatelessSession())
+            using (var session = storageSessionProvider.OpenStatelessSession())
             {
                 using (var tx = session.BeginTransaction(IsolationLevel.ReadCommitted))
                 {
@@ -84,7 +89,7 @@
 
         public void RemoveEntriesOlderThan(DateTime dateTime)
         {
-            using (var session = StorageSessionProvider.OpenSession())
+            using (var session = storageSessionProvider.OpenSession())
             {
                 using (var tx = session.BeginTransaction(IsolationLevel.ReadCommitted))
                 {

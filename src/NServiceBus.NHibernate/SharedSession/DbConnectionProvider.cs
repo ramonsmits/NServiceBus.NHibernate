@@ -7,9 +7,15 @@ namespace NServiceBus.Persistence.NHibernate
 
     class DbConnectionProvider : IDbConnectionProvider
     {
-        public BehaviorContext BehaviorContext { get; set; }
+        readonly BehaviorContext context;
+
         public string DefaultConnectionString { get; set; }
         public bool DisableConnectionSharing { get; set; }
+
+        public DbConnectionProvider(BehaviorContext context)
+        {
+            this.context = context;
+        }
 
         public bool TryGetConnection(out IDbConnection connection, string connectionString)
         {
@@ -23,13 +29,13 @@ namespace NServiceBus.Persistence.NHibernate
                 connectionString = DefaultConnectionString;
             }
 
-            var result = BehaviorContext.TryGet(string.Format("SqlConnection-{0}", connectionString), out connection);
+            var result = context.TryGet(string.Format("SqlConnection-{0}", connectionString), out connection);
 
             if (result == false)
             {
                 Lazy<IDbConnection> lazyConnection;
 
-                result = BehaviorContext.TryGet(string.Format("LazySqlConnection-{0}", connectionString), out lazyConnection);
+                result = context.TryGet(string.Format("LazySqlConnection-{0}", connectionString), out lazyConnection);
                 
                 if (result)
                 {

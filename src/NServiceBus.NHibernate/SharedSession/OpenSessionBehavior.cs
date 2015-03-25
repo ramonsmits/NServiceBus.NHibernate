@@ -7,9 +7,14 @@ namespace NServiceBus.Persistence.NHibernate
 
     class OpenSessionBehavior : PhysicalMessageProcessingStageBehavior
     {
-        public SessionFactoryProvider SessionFactoryProvider { get; set; }
+        readonly SessionFactoryProvider sessionFactoryProvider;
 
         public string ConnectionString { get; set; }
+
+        public OpenSessionBehavior(SessionFactoryProvider sessionFactoryProvider)
+        {
+            this.sessionFactoryProvider = sessionFactoryProvider;
+        }
 
         public override void Invoke(Context context, Action next)
         {
@@ -35,7 +40,7 @@ namespace NServiceBus.Persistence.NHibernate
             }
             else
             {
-                var lazyConnection = new Lazy<IDbConnection>(() => SessionFactoryProvider.SessionFactory.GetConnection());
+                var lazyConnection = new Lazy<IDbConnection>(() => sessionFactoryProvider.SessionFactory.GetConnection());
 
                 context.Set(string.Format("LazySqlConnection-{0}", ConnectionString), lazyConnection);
                 try
@@ -58,7 +63,7 @@ namespace NServiceBus.Persistence.NHibernate
         {
             var lazySession = new Lazy<ISession>(() =>
             {
-                var session = SessionFactoryProvider.SessionFactory.OpenSession(connectionRetriever());
+                var session = sessionFactoryProvider.SessionFactory.OpenSession(connectionRetriever());
                 session.FlushMode = FlushMode.Never;
 
                 return session;

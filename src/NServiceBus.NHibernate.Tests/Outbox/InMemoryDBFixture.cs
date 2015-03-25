@@ -4,15 +4,15 @@ namespace NServiceBus.NHibernate.Tests.Outbox
 {
     using System;
     using System.Collections.Generic;
+    using System.IO;
     using global::NHibernate;
+    using global::NHibernate.Cfg;
     using global::NHibernate.Mapping.ByCode;
     using global::NHibernate.Tool.hbm2ddl;
-    using NServiceBus.Outbox.NHibernate;
-    using SagaPersisters.NHibernate.Tests;
-    using System.IO;
     using NServiceBus.Outbox;
+    using NServiceBus.Outbox.NHibernate;
     using NUnit.Framework;
-
+    using Environment = global::NHibernate.Cfg.Environment;
 
     abstract class InMemoryDBFixture
     {
@@ -22,8 +22,8 @@ namespace NServiceBus.NHibernate.Tests.Outbox
         private readonly string connectionString = @"Data Source=.\SQLEXPRESS;Initial Catalog=nservicebus;Integrated Security=True;";
         private const string dialect = "NHibernate.Dialect.MsSql2012Dialect";
 #else
-        private readonly string connectionString = String.Format(@"Data Source={0};Version=3;New=True;", Path.GetTempFileName());
-        private const string dialect = "NHibernate.Dialect.SQLiteDialect";
+        readonly string connectionString = String.Format(@"Data Source={0};Version=3;New=True;", Path.GetTempFileName());
+        const string dialect = "NHibernate.Dialect.SQLiteDialect";
 #endif
 
         [SetUp]
@@ -32,36 +32,26 @@ namespace NServiceBus.NHibernate.Tests.Outbox
             var mapper = new ModelMapper();
             mapper.AddMapping<OutboxEntityMap>();
 
-            var configuration = new global::NHibernate.Cfg.Configuration()
+            var configuration = new Configuration()
                 .AddProperties(new Dictionary<string, string>
                 {
-                    { "dialect", dialect },
-                    { global::NHibernate.Cfg.Environment.ConnectionString,connectionString }
+                    {"dialect", dialect},
+                    {Environment.ConnectionString, connectionString}
                 });
 
             configuration.AddMapping(mapper.CompileMappingForAllExplicitlyAddedEntities());
 
             new SchemaUpdate(configuration).Execute(false, true);
 
-            SessionFactory = configuration.BuildSessionFactory();
-
-            Session = SessionFactory.OpenSession();
-
-            persister = new OutboxPersister
-            {
-                StorageSessionProvider = new FakeSessionProvider(SessionFactory, Session)
-            };
-
+            sessionFactory = configuration.BuildSessionFactory();
         }
 
         [TearDown]
         public void TearDown()
         {
-            Session.Close();
-            SessionFactory.Close();
+            sessionFactory.Close();
         }
 
-        protected ISession Session;
-        protected ISessionFactory SessionFactory;
+        protected ISessionFactory sessionFactory;
     }
 }

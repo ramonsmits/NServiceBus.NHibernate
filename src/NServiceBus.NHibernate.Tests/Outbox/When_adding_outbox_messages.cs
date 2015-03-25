@@ -16,9 +16,9 @@ namespace NServiceBus.NHibernate.Tests.Outbox
         [ExpectedException]
         public void Should_throw_if__trying_to_insert_same_messageid()
         {
-            using (var session = SessionFactory.OpenSession())
+            using (var session = sessionFactory.OpenSession())
             {
-                persister.StorageSessionProvider = new FakeSessionProvider(SessionFactory, session);
+                persister = new OutboxPersister(new FakeSessionProvider(sessionFactory, session));
                 persister.Store("MySpecialId", Enumerable.Empty<TransportOperation>());
                 persister.Store("MySpecialId", Enumerable.Empty<TransportOperation>());
 
@@ -30,9 +30,9 @@ namespace NServiceBus.NHibernate.Tests.Outbox
         public void Should_save_with_not_dispatched()
         {
             var id = Guid.NewGuid().ToString("N");
-            using (var session = SessionFactory.OpenSession())
+            using (var session = sessionFactory.OpenSession())
             {
-                persister.StorageSessionProvider = new FakeSessionProvider(SessionFactory, session);
+                persister = new OutboxPersister(new FakeSessionProvider(sessionFactory, session));
                 persister.Store(id, new List<TransportOperation>
                 {
                     new TransportOperation(id, new Dictionary<string, string>(), new byte[1024*5], new Dictionary<string, string>()),
@@ -54,9 +54,9 @@ namespace NServiceBus.NHibernate.Tests.Outbox
         {
             var id = Guid.NewGuid().ToString("N");
 
-            using (var session = SessionFactory.OpenSession())
+            using (var session = sessionFactory.OpenSession())
             {
-                persister.StorageSessionProvider = new FakeSessionProvider(SessionFactory, session);
+                persister = new OutboxPersister(new FakeSessionProvider(sessionFactory, session));
                 persister.Store(id, new List<TransportOperation>
                 {
                     new TransportOperation(id, new Dictionary<string, string>(), new byte[1024*5], new Dictionary<string, string>()),
@@ -67,7 +67,7 @@ namespace NServiceBus.NHibernate.Tests.Outbox
 
             persister.SetAsDispatched(id);
 
-            using (var session = SessionFactory.OpenSession())
+            using (var session = sessionFactory.OpenSession())
             {
                 var result = session.QueryOver<OutboxRecord>().Where(o => o.MessageId == id)
                     .SingleOrDefault();
@@ -81,9 +81,9 @@ namespace NServiceBus.NHibernate.Tests.Outbox
         {
             var id = Guid.NewGuid().ToString("N");
             
-            using (var session = SessionFactory.OpenSession())
+            using (var session = sessionFactory.OpenSession())
             {
-                persister.StorageSessionProvider = new FakeSessionProvider(SessionFactory, session);
+                persister = new OutboxPersister(new FakeSessionProvider(sessionFactory, session));
                 persister.Store("NotDispatched", Enumerable.Empty<TransportOperation>());
                 persister.Store(id, new List<TransportOperation>
                 {
@@ -98,7 +98,7 @@ namespace NServiceBus.NHibernate.Tests.Outbox
 
             persister.RemoveEntriesOlderThan(DateTime.UtcNow.AddMinutes(1));
 
-            using (var session = SessionFactory.OpenSession())
+            using (var session = sessionFactory.OpenSession())
             {
                 var result = session.QueryOver<OutboxRecord>().List();
                     

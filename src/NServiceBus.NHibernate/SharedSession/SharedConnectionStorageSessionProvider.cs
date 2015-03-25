@@ -8,17 +8,17 @@ namespace NServiceBus.Persistence.NHibernate
 
     class SharedConnectionStorageSessionProvider : IStorageSessionProvider
     {
-        public BehaviorContext BehaviorContext { get; set; }
-
+        readonly IDbConnectionProvider connectionProvider;
+        readonly SessionFactoryProvider sessionFactoryProvider;
+        readonly BehaviorContext context;
+        
         public string ConnectionString { get; set; }
 
-        public SessionFactoryProvider SessionFactoryProvider { get; set; }
-
-        public IDbConnectionProvider DbConnectionProvider { get; set; }
-
-        public SharedConnectionStorageSessionProvider()
+        public SharedConnectionStorageSessionProvider(IDbConnectionProvider connectionProvider, SessionFactoryProvider sessionFactoryProvider, BehaviorContext context)
         {
-            Console.Out.WriteLine("ff");
+            this.connectionProvider = connectionProvider;
+            this.sessionFactoryProvider = sessionFactoryProvider;
+            this.context = context;
         }
 
         public ISession Session
@@ -27,7 +27,7 @@ namespace NServiceBus.Persistence.NHibernate
             {
                 Lazy<ISession> existingSession;
 
-                if (!BehaviorContext.TryGet(string.Format("LazyNHibernateSession-{0}", ConnectionString), out existingSession))
+                if (!context.TryGet(string.Format("LazyNHibernateSession-{0}", ConnectionString), out existingSession))
                 {
                     throw new Exception("No active storage session found in context");
                 }
@@ -40,24 +40,24 @@ namespace NServiceBus.Persistence.NHibernate
         {
             IDbConnection connection;
 
-            if (DbConnectionProvider.TryGetConnection(out connection, ConnectionString))
+            if (connectionProvider.TryGetConnection(out connection, ConnectionString))
             {
-                return SessionFactoryProvider.SessionFactory.OpenStatelessSession(connection);
+                return sessionFactoryProvider.SessionFactory.OpenStatelessSession(connection);
             }
 
-            return SessionFactoryProvider.SessionFactory.OpenStatelessSession();
+            return sessionFactoryProvider.SessionFactory.OpenStatelessSession();
         }
 
         public ISession OpenSession()
         {
             IDbConnection connection;
 
-            if (DbConnectionProvider.TryGetConnection(out connection, ConnectionString))
+            if (connectionProvider.TryGetConnection(out connection, ConnectionString))
             {
-                return SessionFactoryProvider.SessionFactory.OpenSession(connection);
+                return sessionFactoryProvider.SessionFactory.OpenSession(connection);
             }
 
-            return SessionFactoryProvider.SessionFactory.OpenSession();
+            return sessionFactoryProvider.SessionFactory.OpenSession();
         }
 
         public void ExecuteInTransaction(Action<ISession> operation)

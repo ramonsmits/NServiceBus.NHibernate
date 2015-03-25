@@ -1,6 +1,7 @@
 namespace NServiceBus.Features
 {
     using NHibernate.Cfg;
+    using NServiceBus.Outbox;
     using Persistence.NHibernate;
     using TimeoutPersisters.NHibernate;
     using TimeoutPersisters.NHibernate.Config;
@@ -64,9 +65,8 @@ namespace NServiceBus.Features
                 }
             }
 
-            context.Container.ConfigureComponent<TimeoutPersister>(DependencyLifecycle.SingleInstance)
+            context.Container.ConfigureComponent(builder => new TimeoutPersister(configuration.BuildSessionFactory(), builder.Build<IDbConnectionProvider>()), DependencyLifecycle.SingleInstance)
                 .ConfigureProperty(p => p.ConnectionString, connString)
-                .ConfigureProperty(p => p.SessionFactory, configuration.BuildSessionFactory())
                 .ConfigureProperty(p => p.EndpointName, context.Settings.EndpointName());
         }
 
