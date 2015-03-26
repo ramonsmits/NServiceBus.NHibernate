@@ -28,7 +28,7 @@ namespace NServiceBus.Features
             context.Settings.Get<SharedMappings>()
                 .AddMapping(c => ApplyMappings(context.Settings,c));
 
-            context.Container.ConfigureComponent<SagaPersister>(DependencyLifecycle.InstancePerCall);
+            context.Container.ConfigureComponent<SagaPersister>(DependencyLifecycle.SingleInstance);
         }
 
         internal void ApplyMappings(ReadOnlySettings settings, Configuration configuration)

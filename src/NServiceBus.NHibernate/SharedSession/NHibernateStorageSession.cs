@@ -3,7 +3,6 @@ namespace NServiceBus.Features
     using NHibernate.Cfg;
     using NServiceBus.Outbox;
     using Persistence.NHibernate;
-    using Pipeline;
     using Environment = NHibernate.Cfg.Environment;
 
     /// <summary>
@@ -56,7 +55,7 @@ namespace NServiceBus.Features
             //When outbox is enbaled, do not share transport connection.
             if (context.Container.HasComponent<OutboxPersister>())
             {
-                context.Container.ConfigureComponent<NonSharedConnectionStorageSessionProvider>(DependencyLifecycle.InstancePerCall);
+                context.Container.ConfigureComponent<NonSharedConnectionStorageSessionProvider>(DependencyLifecycle.SingleInstance);
                 context.Container.ConfigureProperty<DbConnectionProvider>(p => p.DisableConnectionSharing, true);
             }
             else
@@ -71,8 +70,8 @@ namespace NServiceBus.Features
                     .ConfigureProperty(p => p.ConnectionString, connString);
                 context.Container.ConfigureComponent<OpenNativeTransactionBehavior>(DependencyLifecycle.InstancePerCall)
                     .ConfigureProperty(p => p.ConnectionString, connString);
-                context.Container.ConfigureComponent(b => new NHibernateStorageContext(b.Build<BehaviorContext>(), connString), DependencyLifecycle.InstancePerCall);
-                context.Container.ConfigureComponent<SharedConnectionStorageSessionProvider>(DependencyLifecycle.InstancePerCall)
+                context.Container.ConfigureComponent(b => new NHibernateStorageContext(b, connString), DependencyLifecycle.InstancePerUnitOfWork);
+                context.Container.ConfigureComponent<SharedConnectionStorageSessionProvider>(DependencyLifecycle.SingleInstance)
                     .ConfigureProperty(p => p.ConnectionString, connString);
             }
 

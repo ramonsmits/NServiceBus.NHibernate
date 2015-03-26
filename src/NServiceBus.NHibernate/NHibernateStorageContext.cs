@@ -3,6 +3,7 @@ namespace NServiceBus.Persistence.NHibernate
     using System;
     using System.Data;
     using global::NHibernate;
+    using NServiceBus.ObjectBuilder;
     using Pipeline;
 
     /// <summary>
@@ -10,12 +11,12 @@ namespace NServiceBus.Persistence.NHibernate
     /// </summary>
     public class NHibernateStorageContext
     {
-        readonly BehaviorContext behaviorContext;
+        readonly IBuilder builder;
         readonly string connectionString;
 
-        internal NHibernateStorageContext(BehaviorContext behaviorContext, string connectionString)
+        internal NHibernateStorageContext(IBuilder builder, string connectionString)
         {
-            this.behaviorContext = behaviorContext;
+            this.builder = builder;
             this.connectionString = connectionString;
         }
 
@@ -27,7 +28,7 @@ namespace NServiceBus.Persistence.NHibernate
             get
             {
                 Lazy<IDbConnection> lazy;
-                if (behaviorContext.TryGet(string.Format("LazySqlConnection-{0}", connectionString), out lazy))
+                if (builder.Build<BehaviorContext>().TryGet(string.Format("LazySqlConnection-{0}", connectionString), out lazy))
                 {
                     return lazy.Value;
                 }
@@ -44,7 +45,7 @@ namespace NServiceBus.Persistence.NHibernate
             get
             {
                 Lazy<ISession> lazy;
-                if (behaviorContext.TryGet(string.Format("LazyNHibernateSession-{0}", connectionString), out lazy))
+                if (builder.Build<BehaviorContext>().TryGet(string.Format("LazyNHibernateSession-{0}", connectionString), out lazy))
                 {
                     return lazy.Value;
                 }
@@ -61,7 +62,7 @@ namespace NServiceBus.Persistence.NHibernate
             get
             {
                 Lazy<ITransaction> lazy;
-                if (behaviorContext.TryGet(string.Format("LazyNHibernateTransaction-{0}", connectionString), out lazy))
+                if (builder.Build<BehaviorContext>().TryGet(string.Format("LazyNHibernateTransaction-{0}", connectionString), out lazy))
                 {
                     return lazy.Value;
                 }

@@ -3,6 +3,7 @@ namespace NServiceBus.Persistence.NHibernate
     using System;
     using System.Data;
     using global::NHibernate;
+    using NServiceBus.ObjectBuilder;
     using Outbox;
     using Pipeline;
 
@@ -10,15 +11,15 @@ namespace NServiceBus.Persistence.NHibernate
     {
         readonly IDbConnectionProvider connectionProvider;
         readonly SessionFactoryProvider sessionFactoryProvider;
-        readonly BehaviorContext context;
+        readonly IBuilder builder;
         
         public string ConnectionString { get; set; }
 
-        public SharedConnectionStorageSessionProvider(IDbConnectionProvider connectionProvider, SessionFactoryProvider sessionFactoryProvider, BehaviorContext context)
+        public SharedConnectionStorageSessionProvider(IDbConnectionProvider connectionProvider, SessionFactoryProvider sessionFactoryProvider, IBuilder builder)
         {
             this.connectionProvider = connectionProvider;
             this.sessionFactoryProvider = sessionFactoryProvider;
-            this.context = context;
+            this.builder = builder;
         }
 
         public ISession Session
@@ -27,7 +28,7 @@ namespace NServiceBus.Persistence.NHibernate
             {
                 Lazy<ISession> existingSession;
 
-                if (!context.TryGet(string.Format("LazyNHibernateSession-{0}", ConnectionString), out existingSession))
+                if (!builder.Build<BehaviorContext>().TryGet(string.Format("LazyNHibernateSession-{0}", ConnectionString), out existingSession))
                 {
                     throw new Exception("No active storage session found in context");
                 }

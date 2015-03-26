@@ -2,19 +2,20 @@ namespace NServiceBus.Persistence.NHibernate
 {
     using System;
     using System.Data;
+    using NServiceBus.ObjectBuilder;
     using Outbox;
     using Pipeline;
 
     class DbConnectionProvider : IDbConnectionProvider
     {
-        readonly BehaviorContext context;
+        readonly IBuilder builder;
 
         public string DefaultConnectionString { get; set; }
         public bool DisableConnectionSharing { get; set; }
 
-        public DbConnectionProvider(BehaviorContext context)
+        public DbConnectionProvider(IBuilder builder)
         {
-            this.context = context;
+            this.builder = builder;
         }
 
         public bool TryGetConnection(out IDbConnection connection, string connectionString)
@@ -29,6 +30,7 @@ namespace NServiceBus.Persistence.NHibernate
                 connectionString = DefaultConnectionString;
             }
 
+            var context = builder.Build<BehaviorContext>();
             var result = context.TryGet(string.Format("SqlConnection-{0}", connectionString), out connection);
 
             if (result == false)
