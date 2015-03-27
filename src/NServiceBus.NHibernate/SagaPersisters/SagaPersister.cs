@@ -73,6 +73,11 @@ namespace NServiceBus.SagaPersisters.NHibernate
             storageSessionProvider.ExecuteInTransaction(x => x.Delete(saga));
         }
 
+        public void Initialize(SagaMetaModel model)
+        {
+            
+        }
+
         LockMode GetLockModeForSaga<T>()
         {
             var explicitLockModeAttribute = typeof(T).GetCustomAttributes(typeof(LockModeAttribute), false).SingleOrDefault();
