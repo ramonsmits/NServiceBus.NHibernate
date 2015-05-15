@@ -30,7 +30,8 @@ namespace NServiceBus.Features
             context.Settings.Get<SharedMappings>()
                 .AddMapping(ApplyMappings);
 
-            context.Container.ConfigureComponent<OutboxPersister>(DependencyLifecycle.InstancePerCall);
+            context.Container.ConfigureComponent<OutboxStorage>(DependencyLifecycle.InstancePerCall);
+            context.Container.ConfigureComponent<OutboxDeduplication>(DependencyLifecycle.InstancePerCall);
         }
 
         void ApplyMappings(Configuration config)
@@ -43,7 +44,12 @@ namespace NServiceBus.Features
 
         class OutboxCleaner:FeatureStartupTask
         {
-            public OutboxPersister OutboxPersister { get; set; }
+            readonly OutboxDeduplication outboxDeduplicator;
+
+            internal OutboxCleaner(OutboxDeduplication deduplicator)
+            {
+                outboxDeduplicator = deduplicator;
+            }
  
             protected override void OnStart()
             {
@@ -90,7 +96,7 @@ namespace NServiceBus.Features
 
             void PerformCleanup(object state)
             {
-                OutboxPersister.RemoveEntriesOlderThan(DateTime.UtcNow - timeToKeepDeduplicationData);
+                outboxDeduplicator.RemoveEntriesOlderThan(DateTime.UtcNow - timeToKeepDeduplicationData);
             }
  
 // ReSharper disable NotAccessedField.Local

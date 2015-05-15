@@ -61,8 +61,8 @@
       <HintPath>..\packages\NHibernate.4.0.3.4000\lib\net40\NHibernate.dll</HintPath>
     </Reference>
     <Reference Include="NServiceBus.Core, Version=6.0.0.0, Culture=neutral, PublicKeyToken=9fc386479f8a226c, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\NServiceBus.6.0.0-making\lib\net45\NServiceBus.Core.dll</HintPath>
+      <HintPath>..\packages\NServiceBus.6.0.0-pullrequest2734\lib\net45\NServiceBus.Core.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Obsolete">
       <HintPath>..\packages\Obsolete.Fody.3.1.0.0\Lib\NET35\Obsolete.dll</HintPath>
@@ -88,6 +88,8 @@
     <Compile Include="Obsoletes\ConfigureNHibernateSubscriptionStorage.cs" />
     <Compile Include="Obsoletes\ConfigureNHibernateTimeoutPersister.cs" />
     <Compile Include="NHibernatePersistence.cs" />
+    <Compile Include="Outbox\OutboxOperationSerialization.cs" />
+    <Compile Include="Outbox\OutboxStorage.cs" />
     <Compile Include="SagaPersisters\LockModes.cs" />
     <Compile Include="SagaPersisters\RowVersionAttribute.cs" />
     <Compile Include="SagaPersisters\SagaConfig.cs" />
@@ -109,7 +111,7 @@
     <Compile Include="Outbox\IDbConnectionProvider.cs" />
     <Compile Include="Outbox\Entities.cs" />
     <Compile Include="Outbox\EntityMappings.cs" />
-    <Compile Include="Outbox\OutboxPersister.cs" />
+    <Compile Include="Outbox\OutboxDeduplication.cs" />
     <Compile Include="Internal\AmbientTransactionAwareWrapper.cs" />
     <Compile Include="Internal\ISessionExtensions.cs" />
     <Compile Include="Internal\ConfigureNHibernate.cs" />

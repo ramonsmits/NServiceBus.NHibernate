@@ -53,16 +53,16 @@ namespace NServiceBus.Features
             context.Container.RegisterSingleton(new SessionFactoryProvider(configuration.BuildSessionFactory()));
 
             //When outbox is enbaled, do not share transport connection.
-            if (context.Container.HasComponent<OutboxPersister>())
+            if (context.Container.HasComponent<OutboxStorage>())
             {
                 context.Container.ConfigureComponent<NonSharedConnectionStorageSessionProvider>(DependencyLifecycle.SingleInstance);
                 context.Container.ConfigureProperty<DbConnectionProvider>(p => p.DisableConnectionSharing, true);
             }
             else
             {
-                context.Pipeline.Register<OpenSqlConnectionBehavior.Registration>();
-                context.Pipeline.Register<OpenSessionBehavior.Registration>();
-                context.Pipeline.Register<OpenNativeTransactionBehavior.Registration>();
+                context.MainPipeline.Register<OpenSqlConnectionBehavior.Registration>();
+                context.MainPipeline.Register<OpenSessionBehavior.Registration>();
+                context.MainPipeline.Register<OpenNativeTransactionBehavior.Registration>();
                 context.Container.ConfigureProperty<DbConnectionProvider>(p => p.DefaultConnectionString, connString);
                 context.Container.ConfigureComponent<OpenSqlConnectionBehavior>(DependencyLifecycle.InstancePerCall)
                     .ConfigureProperty(p => p.ConnectionString, connString);

@@ -1,19 +1,17 @@
 ﻿namespace NServiceBus.Outbox
 {
     using System;
-    using System.Collections.Generic;
     using System.Data;
     using System.Linq;
     using global::NHibernate.Criterion;
     using NHibernate;
     using Persistence.NHibernate;
-    using Serializers.Json;
 
-    class OutboxPersister : IOutboxStorage
+    class OutboxDeduplication : IDeduplicateMessages
     {
         readonly IStorageSessionProvider storageSessionProvider;
 
-        public OutboxPersister(IStorageSessionProvider storageSessionProvider)
+        public OutboxDeduplication(IStorageSessionProvider storageSessionProvider)
         {
             this.storageSessionProvider = storageSessionProvider;
         }
@@ -44,29 +42,11 @@
 
             message = new OutboxMessage(result.MessageId);
 
-            var operations = ConvertStringToObject(result.TransportOperations);
+            var operations = OutboxOperationSerialization.ConvertStringToObject(result.TransportOperations);
             message.TransportOperations.AddRange(operations.Select(t => new TransportOperation(t.MessageId, 
                 t.Options, t.Message, t.Headers)));
 
             return true;
-        }
-
-        public void Store(string messageId, IEnumerable<TransportOperation> transportOperations)
-        {
-            var operations = transportOperations.Select(t => new OutboxOperation
-            {
-                Message = t.Body,
-                Headers = t.Headers,
-                MessageId = t.MessageId,
-                Options = t.Options,
-            });
-
-            storageSessionProvider.ExecuteInTransaction(x => x.Save(new OutboxRecord
-            {
-                MessageId = messageId,
-                Dispatched = false,
-                TransportOperations = ConvertObjectToString(operations)
-            }));
         }
 
         public void SetAsDispatched(string messageId)
@@ -105,27 +85,5 @@
                 }
             }
         }
-
-        static IEnumerable<OutboxOperation> ConvertStringToObject(string data)
-        {
-            if (String.IsNullOrEmpty(data))
-            {
-                return Enumerable.Empty<OutboxOperation>();
-            }
-
-            return (IEnumerable<OutboxOperation>)serializer.DeserializeObject(data, typeof(IEnumerable<OutboxOperation>));
-        }
-
-        static string ConvertObjectToString(IEnumerable<OutboxOperation> operations)
-        {
-            if (operations == null || !operations.Any())
-            {
-                return null;
-            }
-
-            return serializer.SerializeObject(operations);
-        }
-
-        static readonly JsonMessageSerializer serializer = new JsonMessageSerializer(null);
     }
 }
