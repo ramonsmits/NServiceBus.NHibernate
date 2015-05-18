@@ -41,7 +41,6 @@
 
         public virtual string OriginalMessageId { get; set; }
 
-        [Unique]
         public virtual string UniqueString { get; set; }
     }
 

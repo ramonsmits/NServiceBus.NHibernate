@@ -33,7 +33,7 @@
                     });
             }
    
-            class BodyMutator : IMutateTransportMessages, INeedInitialization
+            class BodyMutator : IMutateIncomingTransportMessages, IMutateOutgoingPhysicalContext, INeedInitialization
             {
                 public Context Context { get; set; }
 
@@ -58,9 +58,9 @@
                 }
 
 
-                public void MutateOutgoing(LogicalMessage logicalMessage, TransportMessage transportMessage)
+                public void MutateOutgoing(OutgoingPhysicalMutatorContext context)
                 {
-                    transportMessage.Body[0]--;
+                    context.Body[0]--;
                 }
 
                 public void Customize(BusConfiguration configuration)

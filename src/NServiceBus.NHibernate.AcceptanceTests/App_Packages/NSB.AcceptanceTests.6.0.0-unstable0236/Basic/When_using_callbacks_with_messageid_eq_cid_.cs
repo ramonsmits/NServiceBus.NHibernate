@@ -51,12 +51,12 @@
             }
         }
 
-        class BodyMutator : IMutateOutgoingTransportMessages, INeedInitialization
+        class BodyMutator : IMutateOutgoingPhysicalContext, INeedInitialization
         {
-            public void MutateOutgoing(LogicalMessage logicalMessage, TransportMessage transportMessage)
+            public void MutateOutgoing(OutgoingPhysicalMutatorContext context)
             {
                 //to simulate native interop cases where MessageId == CorrelationId
-                transportMessage.Headers[Headers.MessageId] = transportMessage.Headers[Headers.CorrelationId];
+                context.Headers[Headers.MessageId] = context.Headers[Headers.CorrelationId];
             }
 
             public void Customize(BusConfiguration configuration)

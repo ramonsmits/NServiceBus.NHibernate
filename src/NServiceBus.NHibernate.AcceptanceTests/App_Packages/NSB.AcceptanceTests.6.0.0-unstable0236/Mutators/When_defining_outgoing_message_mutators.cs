@@ -40,7 +40,7 @@
             }
 
 
-            class MyTransportMessageMutator : IMutateOutgoingTransportMessages, INeedInitialization
+            class MyTransportMessageMutator : IMutateOutgoingPhysicalContext, INeedInitialization
             {
 
                 public Context Context { get; set; }
@@ -49,6 +49,12 @@
                 {
                     Context.OutgoingMessageLogicalMessageReceived = logicalMessage != null;
                     transportMessage.Headers["TransportMutatorCalled"] = true.ToString();
+                }
+
+                public void MutateOutgoing(OutgoingPhysicalMutatorContext context)
+                {
+                    Context.OutgoingMessageLogicalMessageReceived = context.Body != null;
+                    context.Headers["TransportMutatorCalled"] = true.ToString();
                 }
 
                 public void Customize(BusConfiguration configuration)

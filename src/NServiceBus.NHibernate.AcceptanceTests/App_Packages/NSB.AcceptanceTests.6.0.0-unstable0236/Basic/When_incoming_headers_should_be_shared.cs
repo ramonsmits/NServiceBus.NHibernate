@@ -1,6 +1,7 @@
 ﻿namespace NServiceBus.AcceptanceTests.Basic
 {
     using System;
+    using NServiceBus;
     using NServiceBus.AcceptanceTesting;
     using NServiceBus.AcceptanceTests.EndpointTemplates;
     using NUnit.Framework;
@@ -59,7 +60,7 @@
 
                 public void Handle(Message message)
                 {
-                    var header = Bus.GetMessageHeader(message, "Key");
+                    var header = Bus.CurrentMessageContext.Headers["Key"];
                     Context.SecondHandlerCanReadHeaderSetByFirstHandler = header == "Value";
                     Context.GotMessage = true;
                 }

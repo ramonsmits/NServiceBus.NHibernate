@@ -27,14 +27,14 @@
             Assert.IsFalse(string.IsNullOrWhiteSpace(context.MessageId));
         }
 
-        public class CorruptionMutator : IMutateOutgoingTransportMessages
+        public class CorruptionMutator : IMutateOutgoingPhysicalContext
         {
             public Context ScenarioContext { get; set; }
 
-            public void MutateOutgoing(LogicalMessage logicalMessage, TransportMessage transportMessage)
+            public void MutateOutgoing(OutgoingPhysicalMutatorContext context)
             {
-                transportMessage.Headers.Remove(Headers.MessageId);
-                transportMessage.Headers["ScenarioContextId"] = ScenarioContext.Id.ToString();
+                context.Headers.Remove(Headers.MessageId);
+                context.Headers["ScenarioContextId"] = ScenarioContext.Id.ToString();
             }
         }
 
