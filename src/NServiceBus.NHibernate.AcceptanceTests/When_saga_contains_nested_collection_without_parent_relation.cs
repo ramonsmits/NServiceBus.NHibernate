@@ -80,7 +80,7 @@
 
         public class TestSagaData : IContainSagaData
         {
-            [Unique]
+           //[Unique]
             public virtual Guid SomeId { get; set; }
             public virtual IList<ChildData> RelatedData { get; set; }
             public virtual Guid Id { get; set; }

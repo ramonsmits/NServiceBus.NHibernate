@@ -70,7 +70,7 @@
             public virtual string Originator { get; set; }
             public virtual string OriginalMessageId { get; set; }
             public virtual string LargeText { get; set; }
-            [Unique]
+           //[Unique]
             public virtual Guid SomeId { get; set; }
         }
 

@@ -53,7 +53,7 @@ namespace NServiceBus.AcceptanceTests.Sagas
                 }
                 public class RequestingSagaData : ContainSagaData
                 {
-                    [Unique]
+                   //[Unique]
                     public virtual Guid CorrIdForResponse { get; set; } //wont be needed in the future
                 }
 
@@ -96,7 +96,7 @@ namespace NServiceBus.AcceptanceTests.Sagas
 
                 public class RespondingSagaData : ContainSagaData
                 {
-                    [Unique]
+                   //[Unique]
                     public virtual Guid CorrIdForRequest { get; set; }
                 }
 

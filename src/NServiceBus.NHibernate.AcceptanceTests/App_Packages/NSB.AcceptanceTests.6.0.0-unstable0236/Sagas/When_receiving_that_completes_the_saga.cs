@@ -140,7 +140,7 @@
                 public virtual Guid Id { get; set; }
                 public virtual string Originator { get; set; }
                 public virtual string OriginalMessageId { get; set; }
-                [Unique]
+               //[Unique]
                 public virtual Guid SomeId { get; set; }
             }
         }

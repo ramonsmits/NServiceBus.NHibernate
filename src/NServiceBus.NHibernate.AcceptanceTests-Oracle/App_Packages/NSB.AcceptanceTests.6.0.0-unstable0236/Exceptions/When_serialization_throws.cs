@@ -66,14 +66,14 @@
             }
 
 
-            class CorruptionMutator : IMutateTransportMessages
+            class CorruptionMutator : IMutateIncomingTransportMessages, IMutateOutgoingPhysicalContext
             {
                 public void MutateIncoming(TransportMessage transportMessage)
                 {
                     transportMessage.Body[1]++;
                 }
 
-                public void MutateOutgoing(LogicalMessage logicalMessage, TransportMessage transportMessage)
+                public void MutateOutgoing(OutgoingPhysicalMutatorContext context)
                 {
                 }
             }

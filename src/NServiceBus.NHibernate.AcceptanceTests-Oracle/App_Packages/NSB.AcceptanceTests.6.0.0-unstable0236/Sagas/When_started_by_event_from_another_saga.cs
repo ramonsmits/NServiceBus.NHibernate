@@ -78,7 +78,7 @@
 
                 public class Saga1Data : ContainSagaData
                 {
-                    [Unique]
+                   //[Unique]
                     public virtual Guid DataId { get; set; }
                 }
 
@@ -121,7 +121,7 @@
 
                 public class Saga2Data : ContainSagaData
                 {
-                    [Unique]
+                   //[Unique]
                     public virtual Guid DataId { get; set; }
                 }
 

@@ -100,7 +100,7 @@
 
                 public class MySaga2Data : ContainSagaData
                 {
-                    [Unique]
+                   //[Unique]
                     public virtual Guid RunId { get; set; }
                 }
             }

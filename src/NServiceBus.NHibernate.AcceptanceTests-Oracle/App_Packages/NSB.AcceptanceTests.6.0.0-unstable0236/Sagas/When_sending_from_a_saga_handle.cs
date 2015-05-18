@@ -64,7 +64,7 @@ namespace NServiceBus.AcceptanceTests.Sagas
 
             public class Saga1Data : ContainSagaData
             {
-                [Unique]
+               //[Unique]
                 public virtual Guid DataId { get; set; }
             }
 
