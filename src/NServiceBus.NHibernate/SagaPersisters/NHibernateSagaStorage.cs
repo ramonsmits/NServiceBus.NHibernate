@@ -48,11 +48,11 @@ namespace NServiceBus.Features
             SagaModelMapper modelMapper;
             if (tableNamingConvention == null)
             {
-                modelMapper = new SagaModelMapper(types);
+                modelMapper = new SagaModelMapper(sagaMetaModel, types);
             }
             else
             {
-                modelMapper = new SagaModelMapper(types, tableNamingConvention);
+                modelMapper = new SagaModelMapper(sagaMetaModel, types, tableNamingConvention);
             }
 
             configuration.AddMapping(modelMapper.Compile());

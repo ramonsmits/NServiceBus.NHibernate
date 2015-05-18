@@ -60,9 +60,9 @@ namespace NServiceBus.Features
             }
             else
             {
-                context.Pipeline.Register<OpenSqlConnectionBehavior.Registration>();
-                context.Pipeline.Register<OpenSessionBehavior.Registration>();
-                context.Pipeline.Register<OpenNativeTransactionBehavior.Registration>();
+                context.MainPipeline.Register<OpenSqlConnectionBehavior.Registration>();
+                context.MainPipeline.Register<OpenSessionBehavior.Registration>();
+                context.MainPipeline.Register<OpenNativeTransactionBehavior.Registration>();
                 context.Container.ConfigureProperty<DbConnectionProvider>(p => p.DefaultConnectionString, connString);
                 context.Container.ConfigureComponent<OpenSqlConnectionBehavior>(DependencyLifecycle.InstancePerCall)
                     .ConfigureProperty(p => p.ConnectionString, connString);
