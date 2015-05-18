@@ -63,7 +63,7 @@
              
                 public object MutateOutgoing(object message)
                 {
-                    Bus.SetMessageHeader(message, "MessageMutatorCalled", "true");
+                    Bus.CurrentMessageContext.Headers.Add("MessageMutatorCalled", "true");
 
                     return message;
                 }

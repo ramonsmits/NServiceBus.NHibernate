@@ -22,7 +22,7 @@
                         bus.Send<MyMessage>(m=>
                         {
                             m.Id = c.Id;
-                            bus.SetMessageHeader(m, "MyHeader", "MyHeaderValue");
+                            bus.CurrentMessageContext.Headers.Add("MyHeader", "MyHeaderValue");
                         });
                     }))
                     .WithEndpoint<Receiver>()
@@ -78,7 +78,7 @@
 
                     Context.TimesCalled++;
 
-                    Context.MyHeader = Bus.GetMessageHeader(message, "MyHeader");
+                    Context.MyHeader = Bus.CurrentMessageContext.Headers.GetOrNull("MyHeader");
 
                     Context.ReceivedHeaders = Bus.CurrentMessageContext.Headers;
 

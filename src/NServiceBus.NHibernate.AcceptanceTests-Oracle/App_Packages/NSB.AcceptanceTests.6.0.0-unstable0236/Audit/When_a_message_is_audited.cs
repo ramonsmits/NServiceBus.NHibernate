@@ -142,8 +142,8 @@
                     {
                         return;
                     }
-                    Context.HostId = Bus.GetMessageHeader(message, Headers.HostId);
-                    Context.HostName = Bus.GetMessageHeader(message, Headers.HostDisplayName);
+                    Context.HostId = Bus.CurrentMessageContext.Headers.GetOrNull(Headers.HostId);
+                    Context.HostName = Bus.CurrentMessageContext.Headers.GetOrNull(Headers.HostDisplayName);
                     Context.Done = true;
                 }
             }

@@ -48,7 +48,7 @@
 
                 public void Handle(Message message)
                 {
-                    Bus.SetMessageHeader(message, "Key", "Value");
+                    Bus.CurrentMessageContext.Headers.Add("Key", "Value");
                 }
             }
 

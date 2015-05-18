@@ -16,8 +16,8 @@
                 {
                     var message = new MessageWithSagaId();
 
-                    bus.SetMessageHeader(message, Headers.SagaId, Guid.NewGuid().ToString());
-                    bus.SetMessageHeader(message, Headers.SagaType, typeof(MySaga).AssemblyQualifiedName);
+                    bus.CurrentMessageContext.Headers.Add(Headers.SagaId, Guid.NewGuid().ToString());
+                    bus.CurrentMessageContext.Headers.Add(Headers.SagaType, typeof(MySaga).AssemblyQualifiedName);
 
                     bus.SendLocal(message);
                 }))
