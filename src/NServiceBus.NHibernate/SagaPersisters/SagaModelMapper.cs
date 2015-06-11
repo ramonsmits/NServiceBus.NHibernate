@@ -18,10 +18,10 @@ namespace NServiceBus.SagaPersisters.NHibernate.AutoPersistence
         public SagaModelMapper(IEnumerable<Type> typesToScan)
             : this(typesToScan, DefaultTableNameConvention)
         {
-            
+
         }
 
-        public SagaModelMapper(IEnumerable<Type> typesToScan, Func<Type,string> tableNamingConvention)
+        public SagaModelMapper(IEnumerable<Type> typesToScan, Func<Type, string> tableNamingConvention)
         {
             this.tableNamingConvention = tableNamingConvention;
             Mapper = new ConventionModelMapper();
@@ -149,7 +149,7 @@ namespace NServiceBus.SagaPersisters.NHibernate.AutoPersistence
         {
             if (type.PreviousPath != null)
             {
-                if (mi.IsComponent(((PropertyInfo) type.PreviousPath.LocalMember).PropertyType))
+                if (mi.IsComponent(((PropertyInfo)type.PreviousPath.LocalMember).PropertyType))
                 {
                     map.Column(type.PreviousPath.LocalMember.Name + type.LocalMember.Name);
                 }
@@ -163,18 +163,26 @@ namespace NServiceBus.SagaPersisters.NHibernate.AutoPersistence
             var propertyInfo = type.LocalMember as PropertyInfo;
             if (propertyInfo != null)
             {
-                if (propertyInfo.PropertyType == typeof(byte[]))
-                {
-                    map.Length(Int32.MaxValue);
-                }
-
+                TypeConfigurations(map, propertyInfo.PropertyType);
                 return;
             }
 
             var fieldInfo = type.LocalMember as FieldInfo;
-            if (fieldInfo != null && fieldInfo.FieldType == typeof(byte[]))
+            if (fieldInfo != null)
+            {
+                TypeConfigurations(map, fieldInfo.FieldType);
+            }
+        }
+
+        void TypeConfigurations(IPropertyMapper map, Type type)
+        {
+            if (type == typeof(byte[]))
             {
                 map.Length(Int32.MaxValue);
+            }
+            else if (type == typeof(DateTime))
+            {
+                map.Type(NHibernateUtil.Timestamp);
             }
         }
 
@@ -253,7 +261,7 @@ namespace NServiceBus.SagaPersisters.NHibernate.AutoPersistence
             entityTypes.Add(rootEntity);
 
             var propertyInfos = rootEntity.GetProperties();
-                
+
             foreach (var propertyInfo in propertyInfos)
             {
                 if (propertyInfo.PropertyType.GetProperty("Id") != null)
